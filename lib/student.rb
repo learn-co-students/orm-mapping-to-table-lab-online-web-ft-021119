@@ -28,14 +28,21 @@ class Student
   end
 
   def self.create(hash)
-    binding.pry
+    student = Student.new(hash[:name], hash[:grade])
+    student.save
+    student
   end
 
   def save
     sql = <<-SQL
-      INSERT INTO students (id, name, grade) VALUES (?,?,?)
+      INSERT INTO students (name, grade) VALUES (?,?)
     SQL
-    DB[:conn].execute(sql, 1, self.name, self.grade)
+    DB[:conn].execute(sql, self.name, self.grade)
+
+    sql = <<-SQL
+      SELECT id FROM students WHERE name = (?)
+    SQL
+    @id = DB[:conn].execute(sql, self.name).flatten.first
   end
 
 end #end of Class
